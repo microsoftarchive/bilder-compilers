@@ -1,0 +1,18 @@
+{
+  "name": "bilder-compilers",
+  "version": "0.0.1",
+  "description": "Compilers grunt-tasks for bilder",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/netroy/bilder-compilers.git"
+  },
+  "author": "NetRoY <aditya@netroy.in> (http://netroy.in/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/netroy/bilder-compilers/issues"
+  }
+}
