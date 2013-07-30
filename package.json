@@ -4,15 +4,26 @@
   "description": "Compilers grunt-tasks for bilder",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha specs/*.spec.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/netroy/bilder-compilers.git"
   },
+  "contributors": [
+    "Aditya <aditya@netroy.in>"
+  ],
   "author": "NetRoY <aditya@netroy.in> (http://netroy.in/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/netroy/bilder-compilers/issues"
+  },
+  "dependencies": {
+    "filesize": "~1.10.0",
+    "stylus": "~0.35.1",
+    "handlebars": "~1.0.12",
+    "optipng-bin": "~0.2.6",
+    "spritesmith": "~0.10.0",
+    "colors": "~0.6.1"
   }
 }
