@@ -19,11 +19,11 @@
     "url": "https://github.com/netroy/bilder-compilers/issues"
   },
   "dependencies": {
-    "filesize": "~1.10.0",
-    "stylus": "~0.35.1",
-    "handlebars": "~1.0.12",
-    "optipng-bin": "~0.2.6",
-    "spritesmith": "~0.10.0",
-    "colors": "~0.6.1"
+    "filesize": "1.10.0",
+    "stylus": "0.32.1",
+    "handlebars": "1.0.10",
+    "optipng-bin": "0.2.6",
+    "spritesmith": "0.9.0",
+    "colors": "0.6.1"
   }
 }
