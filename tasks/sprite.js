@@ -103,7 +103,7 @@ module.exports = function (grunt) {
     var files = grunt.file.expand([glob]);
     var destStylus = path.join(options.stylusDir, this.target + '.styl');
 
-    if(!files.length) {
+    if (!files.length) {
       grunt.file.write(destStylus, '');
       grunt.log.warn('no files for', target);
       return done();
@@ -112,6 +112,21 @@ module.exports = function (grunt) {
     var destImage = path.join(options.destDir, this.target + '.png');
     var displayDir = options.displayDir;
     var filePath = displayDir ? path.join(displayDir, this.target + '.png') : destImage;
+
+    // get the timestamp of the last modified file
+    var lastMtime = new Date(0);
+    files.forEach(function (file) {
+      var mtime = fs.statSync(file).mtime;
+      if (mtime > lastMtime) {
+        lastMtime = mtime;
+      }
+    });
+
+    // if they are all older than the generated file, they don't need building
+    if (fs.existsSync(destImage) && fs.statSync(destImage).ctime > lastMtime) {
+      grunt.log.debug('skipping sprite:', this.target);
+      return done();
+    }
 
     var smithArgs = {
       'src': files,
