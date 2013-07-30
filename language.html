@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>language.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="base-compiler.html">
+                base-compiler.js
+              </a>
+            
+              
+              <a class="source" href="stylus-helpers.html">
+                stylus-helpers.js
+              </a>
+            
+              
+              <a class="source" href="handlebars.html">
+                handlebars.js
+              </a>
+            
+              
+              <a class="source" href="language.html">
+                language.js
+              </a>
+            
+              
+              <a class="source" href="sprite.html">
+                sprite.js
+              </a>
+            
+              
+              <a class="source" href="stylus.html">
+                stylus.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>language.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>module.exports = <span class="keyword">function</span>(grunt, options) {
+
+  <span class="string">'use strict'</span>;
+
+  <span class="keyword">var</span> fs = require(<span class="string">'fs'</span>);
+  <span class="keyword">var</span> path = require(<span class="string">'path'</span>);
+  <span class="keyword">var</span> util = require(<span class="string">'util'</span>);
+
+  <span class="keyword">var</span> langMetaData = require(<span class="string">'../data/languages-metadata'</span>);
+  <span class="keyword">var</span> enabledLanguages = {};
+  <span class="keyword">var</span> enabledLabels = {};
+
+  <span class="keyword">var</span> suffixRegExp = <span class="regexp">/\/Localizable\.strings$/</span>;
+  <span class="keyword">var</span> lineParsingRegExp = <span class="regexp">/^\s*\"([a-zA-Z0-9_\-\$]+)\"\s*=\s*\"(.*)\";\s*$/</span>;
+  <span class="keyword">var</span> template = <span class="string">"define(function() {\nreturn {\n'name': '%s',\n'data': %s\n};\n});"</span>;
+
+  <span class="function"><span class="keyword">function</span> <span class="title">resolveLangCode</span> <span class="params">(langCode)</span> {</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>GetLocalization doesn&#39;t follow ISO codes, fix the names</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    langCode = langCode.replace(<span class="regexp">/\-/g</span>, <span class="string">'_'</span>);
+
+    <span class="keyword">var</span> metaData = langMetaData[langCode];
+    <span class="keyword">while</span> (metaData &amp;&amp; metaData.alias) {
+      langCode = metaData.alias;
+      metaData = langMetaData[langCode];
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>if there is no metadata for this language, then drop out</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span>(!metaData) {
+      grunt.warn(<span class="string">'Language missing:'</span> + langCode);
+      <span class="keyword">return</span>;
+    }
+
+    <span class="keyword">return</span> {
+      <span class="string">'code'</span>: langCode,
+      <span class="string">'data'</span>: metaData
+    };
+  }
+
+  <span class="function"><span class="keyword">function</span> <span class="title">fileToCode</span> <span class="params">(file, options)</span> {</span>
+    <span class="keyword">var</span> prefixRegexp = <span class="keyword">new</span> RegExp(<span class="string">'^'</span> + options.src + <span class="string">'/'</span>);
+    <span class="keyword">return</span> file.replace(prefixRegexp, <span class="string">''</span>).replace(suffixRegExp, <span class="string">''</span>);
+  }
+
+  <span class="function"><span class="keyword">function</span> <span class="title">name</span> <span class="params">(file, options)</span> {</span>
+    <span class="keyword">var</span> langCode = fileToCode(file, options);
+    <span class="keyword">var</span> resolved = resolveLangCode(langCode);
+    <span class="keyword">return</span> resolved &amp;&amp; resolved.data.file;
+  }
+
+  <span class="function"><span class="keyword">function</span> <span class="title">compile</span> <span class="params">(rawLanguageData, options, callback)</span> {</span>
+
+    <span class="keyword">var</span> json = {};
+
+    <span class="keyword">var</span> lines = rawLanguageData.split(<span class="regexp">/[\r\n]+/</span>);
+    lines.forEach(<span class="keyword">function</span>(line) {
+
+      <span class="keyword">var</span> sections = line.match(lineParsingRegExp);
+      <span class="keyword">if</span> (sections &amp;&amp; sections.length &gt;= <span class="number">2</span> &amp;&amp; !sections[<span class="number">1</span>].match(<span class="regexp">/\s/</span>)) {
+
+        <span class="keyword">var</span> key = sections[<span class="number">1</span>];
+        <span class="keyword">if</span> (!(enabledLabels[key])) { <span class="comment">// TODO: how to handle momentjs ?? &amp;&amp; !key.match(/^momentjs_/)) {</span>
+          <span class="keyword">return</span>;
+        }
+
+        <span class="keyword">var</span> value = sections[<span class="number">2</span>];
+        value = value.replace(<span class="regexp">/%(([0-9]+)\$)?@/g</span>, <span class="keyword">function</span>(x, y, num) {
+          <span class="keyword">return</span> <span class="string">'$'</span> + (num || <span class="string">''</span>);
+        }).replace(<span class="regexp">/\\\"/g</span>, <span class="string">'"'</span>);
+
+        json[key] = value;
+      }
+    });
+
+    callback(<span class="literal">null</span>, JSON.stringify(json));
+  }
+
+  <span class="function"><span class="keyword">function</span> <span class="title">compileAvailable</span><span class="params">(err, languages, options, done)</span> {</span>
+
+    <span class="keyword">var</span> available = {};
+
+    options.compiled = [];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Generate a map of available &amp; enabled languages</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    languages.forEach(<span class="keyword">function</span>(lang) {
+
+      <span class="keyword">var</span> langCode = fileToCode(lang.file, options);
+      <span class="keyword">var</span> resolved = resolveLangCode(langCode);
+
+      <span class="keyword">if</span>(!resolved) {
+        <span class="keyword">return</span>;
+      }
+
+      <span class="keyword">var</span> metaData = resolved.data;
+      langCode = resolved.code;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Skip disabled languages</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span>(!enabledLanguages[langCode]) {
+        <span class="keyword">return</span>;
+      }
+
+      available[langCode] = {
+        <span class="string">"file"</span>: metaData.file,
+        <span class="string">"name"</span>: metaData.name
+      };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>push the list into an array that other tasks can user</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      options.compiled.push(metaData.file);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Add directiorn info for rtl languages</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span>(metaData.dir) {
+        available[langCode].dir = metaData.dir;
+      }
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Copy over all the enabled aliases</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> aliases = {};
+    Object.keys(langMetaData).forEach(<span class="function"><span class="keyword">function</span> <span class="params">(langCode)</span> {</span>
+      <span class="keyword">var</span> metaData = langMetaData[langCode];
+      <span class="keyword">if</span>(metaData.alias &amp;&amp; metaData.alias <span class="keyword">in</span> available) {
+        aliases[langCode] = metaData.alias;
+      }
+    });
+    available.aliases = aliases;
+
+    <span class="keyword">var</span> destFilePath = path.join(options.destPath, <span class="string">'available.js'</span>);
+    <span class="keyword">var</span> module = util.format(template, <span class="string">'available'</span>, JSON.stringify(available));
+    fs.writeFile(destFilePath, module, <span class="keyword">function</span>() {
+      grunt.log.debug(<span class="string">'\u2713'</span>, <span class="string">'languages/available'</span>);
+      done();
+    });
+  }
+
+  <span class="keyword">var</span> BaseCompileTask = require(<span class="string">'../lib/base-compiler'</span>);
+  <span class="function"><span class="keyword">function</span> <span class="title">LanguageCompileTask</span><span class="params">()</span> {</span>
+
+    <span class="keyword">var</span> options = <span class="keyword">this</span>.options({
+      <span class="string">'src'</span>: <span class="string">'src/languages/strings'</span>,
+      <span class="string">'dest'</span>: <span class="string">'public/languages'</span>,
+      <span class="string">'glob'</span>: <span class="string">'**/Localizable.strings'</span>,
+      <span class="string">'labels'</span>: <span class="string">'data/labels.txt'</span>,
+      <span class="string">'languages'</span>: [<span class="string">'en'</span>]
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>pre-populate the available-languages map</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span>(options.languages.length) {
+      options.languages.forEach(<span class="function"><span class="keyword">function</span> <span class="params">(langCode)</span> {</span>
+        <span class="keyword">var</span> resolved = resolveLangCode(langCode);
+        enabledLanguages[resolved.code] = resolved.data;
+      });
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>pre-populate the valid-labels map</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span>(options.labels) {
+      <span class="keyword">var</span> labelsFilePath = path.resolve(options.labels);
+
+      <span class="keyword">var</span> exists = fs.existsSync(labelsFilePath);
+      <span class="keyword">if</span>(!exists) {
+        grunt.fatal(<span class="string">'languages: '</span> + labelsFilePath + <span class="string">' does not exists'</span>);
+      }
+
+      <span class="keyword">var</span> labels = fs.readFileSync(labelsFilePath).toString();
+      labels = labels.split(<span class="regexp">/[\n\r\t\s]/g</span>);
+      labels.forEach(<span class="keyword">function</span>(label) {
+        enabledLabels[label] = <span class="literal">true</span>;
+      });
+    }
+
+    BaseCompileTask.call(<span class="keyword">this</span>, grunt, {
+      <span class="string">'type'</span>: <span class="string">'language'</span>,
+      <span class="string">'name'</span>: name,
+      <span class="string">'template'</span>: template,
+      <span class="string">'compile'</span>: compile,
+      <span class="string">'options'</span>: options
+    }, compileAvailable);
+  }
+
+  grunt.registerTask(<span class="string">'compile/languages'</span>, <span class="string">'Compile localization data as AMD modules'</span>, LanguageCompileTask);
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

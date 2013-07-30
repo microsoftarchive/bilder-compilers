@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>sprite.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="base-compiler.html">
+                base-compiler.js
+              </a>
+            
+              
+              <a class="source" href="stylus-helpers.html">
+                stylus-helpers.js
+              </a>
+            
+              
+              <a class="source" href="handlebars.html">
+                handlebars.js
+              </a>
+            
+              
+              <a class="source" href="language.html">
+                language.js
+              </a>
+            
+              
+              <a class="source" href="sprite.html">
+                sprite.js
+              </a>
+            
+              
+              <a class="source" href="stylus.html">
+                stylus.js
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>sprite.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>module.exports = <span class="function"><span class="keyword">function</span> <span class="params">(grunt)</span> {</span>
+
+  <span class="string">'use strict'</span>;
+
+  <span class="keyword">var</span> spritesmith = require(<span class="string">'spriteSmith'</span>);
+  <span class="keyword">var</span> optipng = require(<span class="string">'optipng-bin'</span>);
+  <span class="keyword">var</span> filesize = require(<span class="string">'filesize'</span>);
+  require(<span class="string">'colors'</span>);
+
+  <span class="keyword">var</span> fs = require(<span class="string">'fs'</span>);
+  <span class="keyword">var</span> path = require(<span class="string">'path'</span>);
+  <span class="keyword">var</span> _ = grunt.util._;
+
+  <span class="function"><span class="keyword">function</span> <span class="title">coordsToStylus</span> <span class="params">(name, coords)</span> {</span>
+
+    <span class="keyword">var</span> stylus = <span class="string">'$'</span> + name + <span class="string">' = '</span>;
+    stylus += <span class="string">'-'</span> + coords.x + <span class="string">'px '</span> ;
+    stylus += <span class="string">'-'</span> + coords.y + <span class="string">'px '</span>;
+    stylus += coords.width + <span class="string">'px '</span>;
+    stylus += coords.height + <span class="string">'px'</span>;
+
+    <span class="keyword">return</span> stylus;
+  }
+
+  <span class="function"><span class="keyword">function</span> <span class="title">minifiyImage</span><span class="params">(file, options, callback)</span> {</span>
+
+    file = path.resolve(file);
+
+    <span class="keyword">var</span> optipngArgs = [<span class="string">'-strip'</span>, <span class="string">'all'</span>, <span class="string">'-o'</span>, options.compression, <span class="string">'-out'</span>, file, file];
+    <span class="keyword">var</span> originalSize = fs.statSync(file).size;
+
+    grunt.util.spawn({
+      <span class="string">'cmd'</span>: optipng.path,
+      <span class="string">'args'</span>: optipngArgs
+    }, <span class="function"><span class="keyword">function</span> <span class="params">(err, result, code)</span> {</span>
+
+      <span class="keyword">var</span> newSize = fs.statSync(file).size;
+      <span class="keyword">var</span> diff = originalSize - newSize;
+      <span class="keyword">if</span>(result.stderr.indexOf(<span class="string">'already optimized'</span>) !== -<span class="number">1</span> || diff &lt; <span class="number">10</span>) {
+        grunt.log.writeln(<span class="string">'  \u2713'</span>.green, <span class="string">'already optimized'</span>);
+      } <span class="keyword">else</span> {
+        grunt.log.writeln(<span class="string">'  \u2713'</span>.green, <span class="string">'optimized'</span>, filesize(newSize, <span class="number">2</span>, <span class="literal">false</span>));
+        grunt.log.writeln(<span class="string">'--- saved'</span>, filesize(diff, <span class="number">2</span>, <span class="literal">false</span>));
+      }
+
+      process.nextTick(callback);
+    });
+  }
+
+  <span class="function"><span class="keyword">function</span> <span class="title">generated</span> <span class="params">(options, target, filePath, destStylus, destImage, callback)</span> {</span>
+
+    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="params">(error, result)</span> {</span>
+
+      <span class="keyword">if</span> (error) {
+        grunt.fatal(<span class="string">'failed generating sprite - '</span> + target);
+      }
+
+      <span class="keyword">if</span>(!options.skipStylus) {
+
+        <span class="keyword">var</span> stylus = [ <span class="string">'$'</span> + target + <span class="string">'_file = "'</span> + filePath + <span class="string">'"'</span> ];
+        <span class="keyword">var</span> names = [];
+
+        _.each(result.coordinates, <span class="function"><span class="keyword">function</span> <span class="params">(coords, file)</span> {</span>
+
+          <span class="keyword">var</span> lastIndex = file.lastIndexOf(<span class="string">'/'</span>);
+          file = file.substr(lastIndex + <span class="number">1</span>).replace(<span class="regexp">/\.(png|jpeg)$/</span>, <span class="string">''</span>);
+          stylus.push(coordsToStylus(target + <span class="string">'-'</span> + file, coords));
+          names.push(file);
+        });
+
+        stylus.push(<span class="string">'$'</span> + target + <span class="string">'_names = '</span> + names.join(<span class="string">' '</span>));
+
+        grunt.file.write(destStylus, stylus.join(<span class="string">'\n'</span>));
+      }
+
+      grunt.file.write(destImage, result.image, {
+        <span class="string">'encoding'</span>: <span class="string">'binary'</span>
+      });
+
+      <span class="keyword">var</span> size = filesize(fs.statSync(destImage).size, <span class="number">2</span>, <span class="literal">false</span>);
+      grunt.log.writeln(<span class="string">'  \u2713'</span>.green, <span class="string">'generated'</span>, size);
+
+      callback(destImage);
+    };
+  }
+
+  <span class="function"><span class="keyword">function</span> <span class="title">SpriteTask</span><span class="params">()</span> {</span>
+
+    <span class="keyword">var</span> done = <span class="keyword">this</span>.async();
+    <span class="keyword">var</span> target = <span class="keyword">this</span>.target;
+    <span class="keyword">var</span> options = <span class="keyword">this</span>.options({
+      <span class="string">'algorithm'</span>: <span class="string">'binary-tree'</span>,
+      <span class="string">'compression'</span>: <span class="number">3</span>,
+      <span class="string">'engine'</span>: <span class="string">'auto'</span>,
+      <span class="string">'format'</span>: <span class="string">'png'</span>,
+      <span class="string">'destDir'</span>: <span class="string">'public/images/sprites'</span>,
+      <span class="string">'displayDir'</span>: <span class="string">'images/sprites'</span>,
+      <span class="string">'srcDir'</span>: <span class="string">'src/sprites'</span>,
+      <span class="string">'stylusDir'</span>: <span class="string">'src/styles/sprites'</span>
+    });
+
+    <span class="keyword">var</span> glob = options.srcDir + <span class="string">'/'</span> + target + <span class="string">'/**/*.png'</span>;
+    <span class="keyword">var</span> files = grunt.file.expand([glob]);
+    <span class="keyword">var</span> destStylus = path.join(options.stylusDir, <span class="keyword">this</span>.target + <span class="string">'.styl'</span>);
+
+    <span class="keyword">if</span> (!files.length) {
+      grunt.file.write(destStylus, <span class="string">''</span>);
+      grunt.log.warn(<span class="string">'no files for'</span>, target);
+      <span class="keyword">return</span> done();
+    }
+
+    <span class="keyword">var</span> destImage = path.join(options.destDir, <span class="keyword">this</span>.target + <span class="string">'.png'</span>);
+    <span class="keyword">var</span> displayDir = options.displayDir;
+    <span class="keyword">var</span> filePath = displayDir ? path.join(displayDir, <span class="keyword">this</span>.target + <span class="string">'.png'</span>) : destImage;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>get the timestamp of the last modified file</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">var</span> lastMtime = <span class="keyword">new</span> Date(<span class="number">0</span>);
+    files.forEach(<span class="function"><span class="keyword">function</span> <span class="params">(file)</span> {</span>
+      <span class="keyword">var</span> mtime = fs.statSync(file).mtime;
+      <span class="keyword">if</span> (mtime &gt; lastMtime) {
+        lastMtime = mtime;
+      }
+    });</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>if they are all older than the generated file, they don&#39;t need building</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> (fs.existsSync(destImage) &amp;&amp; fs.statSync(destImage).ctime &gt; lastMtime) {
+      grunt.log.debug(<span class="string">'skipping sprite:'</span>, <span class="keyword">this</span>.target);
+      <span class="keyword">return</span> done();
+    }
+
+    <span class="keyword">var</span> smithArgs = {
+      <span class="string">'src'</span>: files,
+      <span class="string">'engine'</span>: options.engine,
+      <span class="string">'algorithm'</span>: options.algorithm,
+      <span class="string">'exportOpts'</span>: {
+        <span class="string">'format'</span>: options.format
+      }
+    };
+
+    <span class="keyword">var</span> callback = generated (options, target, filePath, destStylus, destImage, <span class="function"><span class="keyword">function</span> <span class="params">(destImage)</span> {</span>
+      minifiyImage(destImage, options, done);
+    });
+
+    spritesmith(smithArgs, callback);
+  }
+
+  grunt.registerMultiTask(<span class="string">'compile/sprite'</span>, <span class="string">'sprite builder and stylus exporter'</span>, SpriteTask);
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
