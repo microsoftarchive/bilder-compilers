@@ -1,6 +1,6 @@
 {
   "name": "bilder-compilers",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Compilers grunt-tasks for bilder",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   "dependencies": {
     "filesize": "1.10.0",
     "stylus": "0.32.1",
-    "handlebars": "1.0.10",
+    "handlebars": "1.0.12",
     "optipng-bin": "0.2.6",
     "spritesmith": "0.9.0",
     "colors": "0.6.1"
