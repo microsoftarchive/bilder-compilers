@@ -114,19 +114,19 @@ module.exports = function (grunt) {
     var filePath = displayDir ? path.join(displayDir, this.target + '.png') : destImage;
 
     // get the timestamp of the last modified file
-    var lastMtime = new Date(0);
-    files.forEach(function (file) {
-      var mtime = fs.statSync(file).mtime;
-      if (mtime > lastMtime) {
-        lastMtime = mtime;
-      }
-    });
+    // var lastMtime = new Date(0);
+    // files.forEach(function (file) {
+    //   var mtime = fs.statSync(file).mtime;
+    //   if (mtime > lastMtime) {
+    //     lastMtime = mtime;
+    //   }
+    // });
 
-    // if they are all older than the generated file, they don't need building
-    if (fs.existsSync(destImage) && fs.statSync(destImage).ctime > lastMtime) {
-      grunt.log.debug('skipping sprite:', this.target);
-      return done();
-    }
+    // // if they are all older than the generated file, they don't need building
+    // if (fs.existsSync(destImage) && fs.statSync(destImage).ctime > lastMtime) {
+    //   grunt.log.debug('skipping sprite:', this.target);
+    //   return done();
+    // }
 
     var smithArgs = {
       'src': files,
