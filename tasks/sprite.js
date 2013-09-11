@@ -2,7 +2,7 @@ module.exports = function (grunt) {
 
   'use strict';
 
-  var spritesmith = require('spriteSmith');
+  var spritesmith = require('spritesmith');
   var optipng = require('optipng-bin');
   var filesize = require('filesize');
   require('colors');
