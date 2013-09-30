@@ -63,7 +63,7 @@ module.exports = function (grunt) {
         _.each(result.coordinates, function (coords, file) {
 
           var lastIndex = file.lastIndexOf('/');
-          file = file.substr(lastIndex + 1).replace(/\.(png|jpeg)$/, '');
+          file = file.substr(lastIndex + 1).replace(/\.(png|jpeg|jpg)$/, '');
           stylus.push(coordsToStylus(target + '-' + file, coords));
           names.push(file);
         });
@@ -99,8 +99,17 @@ module.exports = function (grunt) {
       'stylusDir': 'src/styles/sprites'
     });
 
-    var glob = options.srcDir + '/' + target + '/**/*.png';
-    var files = grunt.file.expand([glob]);
+    var baseDir = options.srcDir + '/' + target;
+    var files = grunt.file.expand({
+      'cwd': baseDir
+    }, [
+      '**/*.png',
+      '**/*.jpeg',
+      '**/*.jpg'
+    ]).map(function (file) {
+      return path.join(baseDir, file);
+    });
+
     var destStylus = path.join(options.stylusDir, this.target + '.styl');
 
     if (!files.length) {
