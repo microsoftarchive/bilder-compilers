@@ -3,6 +3,7 @@ module.exports = function(grunt, options) {
   'use strict';
 
   var stylus = require('stylus');
+  var nib = require('nib');
   var stylusHelpers = require('../lib/stylus-helpers');
 
   var suffixRegExp = /\.styl$/;
@@ -31,6 +32,8 @@ module.exports = function(grunt, options) {
         'paths': [options.srcPath],
         'sassDebug': true
       })
+      .use(nib())
+      .import('nib')
       .use(stylusHelpers)
       .render(done);
     } catch (e){
