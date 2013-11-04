@@ -3,6 +3,7 @@ module.exports = function(grunt, options) {
   'use strict';
 
   var stylus = require('stylus');
+  var nib = require('nib');
   var stylusHelpers = require('../lib/stylus-helpers');
 
   var suffixRegExp = /\.styl$/;
