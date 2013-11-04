@@ -53,6 +53,8 @@ module.exports = function(grunt, options) {
         'paths': [options.srcPath],
         'sassDebug': true
       })
+      .use(nib())
+      .import('nib')
       .use(stylusHelpers)
       .render(done);
     } catch (e){
