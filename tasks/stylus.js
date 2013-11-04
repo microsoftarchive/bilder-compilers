@@ -3,7 +3,6 @@ module.exports = function(grunt, options) {
   'use strict';
 
   var stylus = require('stylus');
-  var nib = require('nib');
   var stylusHelpers = require('../lib/stylus-helpers');
 
   var suffixRegExp = /\.styl$/;
@@ -12,6 +11,24 @@ module.exports = function(grunt, options) {
   function name (file, options) {
     var prefixRegexp = new RegExp('^' + options.src + '/');
     return file.replace(prefixRegexp, '').replace(suffixRegExp, '');
+  }
+
+  function wrapWithSelector (raw, options) {
+
+    var old = raw;
+    var newLine = '\n';
+
+    raw = options.wrapWithSelector + newLine;
+
+    var lines = old.split('\n');
+    
+    lines.forEach(function (line) {
+      raw += '  ' + line + newLine;
+    });
+
+    raw += newLine;
+
+    return raw;
   }
 
   function compile (rawStylus, options, callback) {
@@ -26,14 +43,16 @@ module.exports = function(grunt, options) {
       callback(null, JSON.stringify(css.replace(/[\r\n\s]+/g, ' ')));
     }
 
+    if (!!rawStylus && options.wrapWithSelector) {
+      rawStylus = wrapWithSelector(rawStylus, options);
+    }
+
     try {
       stylus(rawStylus, {
         'compress': true,
         'paths': [options.srcPath],
         'sassDebug': true
       })
-      .use(nib())
-      .import('nib')
       .use(stylusHelpers)
       .render(done);
     } catch (e){
