@@ -14,6 +14,24 @@ module.exports = function(grunt, options) {
     return file.replace(prefixRegexp, '').replace(suffixRegExp, '');
   }
 
+  function wrapWithSelector (raw, options) {
+
+    var old = raw;
+    var newLine = '\n';
+
+    raw = options.wrapWithSelector + newLine;
+
+    var lines = old.split('\n');
+    
+    lines.forEach(function (line) {
+      raw += '  ' + line + newLine;
+    });
+
+    raw += newLine;
+
+    return raw;
+  }
+
   function compile (rawStylus, options, callback) {
 
     function done(err, css) {
@@ -24,6 +42,10 @@ module.exports = function(grunt, options) {
       }
 
       callback(null, JSON.stringify(css.replace(/[\r\n\s]+/g, ' ')));
+    }
+
+    if (!!rawStylus && options.wrapWithSelector) {
+      rawStylus = wrapWithSelector(rawStylus, options);
     }
 
     try {
