@@ -11,7 +11,8 @@
     "url": "https://github.com/netroy/bilder-compilers.git"
   },
   "contributors": [
-    "Aditya <aditya@netroy.in>"
+    "Aditya <aditya@netroy.in>",
+    "Adam Renklint <adam@renklint.com>"
   ],
   "author": "NetRoY <aditya@netroy.in> (http://netroy.in/)",
   "license": "MIT",
