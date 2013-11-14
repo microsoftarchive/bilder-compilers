@@ -57,7 +57,7 @@ module.exports = function (grunt) {
 
       if(!options.skipStylus) {
 
-        var stylus = [ '$' + target + '_file = "' + filePath + '"' ];
+        var stylus = [ '$' + target + '_file = "' + ((options.imgPath && options.imgPath + target + '.' + options.format) || filePath) + '"' ];
         var names = [];
 
         _.each(result.coordinates, function (coords, file) {
@@ -88,7 +88,7 @@ module.exports = function (grunt) {
 
     var done = this.async();
     var target = this.target;
-    var options = this.options({
+    var options = {
       'algorithm': 'binary-tree',
       'compression': 3,
       'engine': 'auto',
@@ -97,7 +97,8 @@ module.exports = function (grunt) {
       'displayDir': 'images/sprites',
       'srcDir': 'src/sprites',
       'stylusDir': 'src/styles/sprites'
-    });
+    };
+    _.extend(options, this.data)
 
     var baseDir = options.srcDir + '/' + target;
     var files = grunt.file.expand({
@@ -117,7 +118,6 @@ module.exports = function (grunt) {
       grunt.log.warn('no files for', target);
       return done();
     }
-
     var destImage = path.join(options.destDir, this.target + '.png');
     var displayDir = options.displayDir;
     var filePath = displayDir ? path.join(displayDir, this.target + '.png') : destImage;
