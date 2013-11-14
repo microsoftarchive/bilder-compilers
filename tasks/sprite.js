@@ -56,8 +56,8 @@ module.exports = function (grunt) {
       }
 
       if(!options.skipStylus) {
-
-        var stylus = [ '$' + target + '_file = "' + ((options.imgPath && options.imgPath + target + '.' + options.format) || filePath) + '"' ];
+        var stylusFileReference = ((options.imgPath && options.imgPath + target + '.' + options.format) || filePath);
+        var stylus = [ '$' + target + '_file = "' + stylusFileReference + '"' ];
         var names = [];
 
         _.each(result.coordinates, function (coords, file) {
