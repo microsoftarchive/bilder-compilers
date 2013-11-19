@@ -64,7 +64,7 @@ module.exports = function(grunt, options) {
         }
 
         var value = sections[2];
-        value = value.replace(/%(([0-9]+)\$)?@/g, function(x, y, num) {
+        value = value.replace(/(%|@)(([0-9]+)\$)?(@|%)/g, function(x, y, num) {
           return '$' + (num || '');
         }).replace(/\\\"/g, '"');
 
