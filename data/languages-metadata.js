@@ -3,7 +3,7 @@ module.exports = {
     "file": "afrikaans",
     "name": "Afrikaans"
   },
-  "ar_AR": {
+  "ar": {
     "file": "arabic",
     "name": "‏العربية‏",
     "dir": "rtl"
@@ -14,7 +14,7 @@ module.exports = {
     "dir": "rtl"
   },
   "be": {
-    "alias": "be"
+    "alias": "be_BY"
   },
   "be_BY": {
     "file": "belarusian",
@@ -421,6 +421,9 @@ module.exports = {
   "tl_PH": {
     "file": "filipino",
     "name": "Filipino"
+  },
+  "tr": {
+    "alias": "tr_TR"
   },
   "tr_TR": {
     "file": "turkish",
