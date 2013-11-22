@@ -48,6 +48,10 @@ module.exports = function(grunt, options) {
     return resolved && resolved.data.file;
   }
 
+  function replaceWithNum (x, y, num) {
+    return '$' + (num || '');
+  }
+
   function compile (rawLanguageData, options, callback) {
 
     var json = {};
@@ -64,9 +68,17 @@ module.exports = function(grunt, options) {
         }
 
         var value = sections[2];
-        value = value.replace(/(%|@)(([0-9]+)\$)?(@|%)/g, function(x, y, num) {
-          return '$' + (num || '');
-        }).replace(/\\\"/g, '"');
+
+        var regexps = [
+          /%((\d+)\$)?@/g,
+          /@((\d+)\$)?%/g
+        ];
+
+        regexps.forEach(function (regexp) {
+          value = value.replace(regexp, replaceWithNum);
+        });
+
+        value = value.replace(/\\\"/g, '"');
 
         json[key] = value;
       }
