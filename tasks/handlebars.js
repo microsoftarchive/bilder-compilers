@@ -6,11 +6,13 @@ module.exports = function(grunt, options) {
 
   var suffixRegExp = /\.tmpl$/;
   var template = [
-    "define(['vendor/handlebars'], function(H) {",
-      "var name = '%s';",
-      "return H.template(%s);",
+    "define(function () {",
+      "return {",
+        "name: '%s',",
+        "fn: %s",
+      "};",
     "});"
-  ].join('\n');
+  ].join('');
 
   function name (file, options) {
     var prefixRegexp = new RegExp('^' + options.src + '/');
