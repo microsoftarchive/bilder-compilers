@@ -144,15 +144,15 @@ module.exports = function (grunt) {
       return done();
     }
 
-    if (!hasChanged(baseDir, files)) {
+    var destImage = path.join(options.destDir, this.target + '.png');
+    var displayDir = options.displayDir;
+    var filePath = displayDir ? path.join(displayDir, this.target + '.png') : destImage;
+
+    if (!hasChanged(baseDir, files) && fs.existsSync(destImage)) {
 
       grunt.log.warn('no change, not re-compiling sprite for', target);
       return done();
     }
-
-    var destImage = path.join(options.destDir, this.target + '.png');
-    var displayDir = options.displayDir;
-    var filePath = displayDir ? path.join(displayDir, this.target + '.png') : destImage;
 
     var smithArgs = {
       'src': files,
