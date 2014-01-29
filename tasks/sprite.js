@@ -84,6 +84,30 @@ module.exports = function (grunt) {
     };
   }
 
+  function hasChanged (baseDir, files) {
+
+    var logFilePath = path.join(baseDir, '.modified');
+    var oldHash;
+
+    if (fs.existsSync(logFilePath)) {
+      oldHash = fs.readFileSync(logFilePath).toString();
+    }
+
+    var newHash = {};
+
+    (files || []).forEach(function (file) {
+
+      var stat = fs.statSync(file);
+      var modified = stat.mtime;
+      newHash[file] = modified;
+    });
+
+    newHash = JSON.stringify(newHash);
+    fs.writeFileSync(logFilePath, newHash);
+
+    return oldHash !== newHash;
+  }
+
   function SpriteTask() {
 
     var done = this.async();
@@ -114,28 +138,21 @@ module.exports = function (grunt) {
     var destStylus = path.join(options.stylusDir, this.target + '.styl');
 
     if (!files.length) {
+
       grunt.file.write(destStylus, '');
       grunt.log.warn('no files for', target);
       return done();
     }
+
+    if (!hasChanged(baseDir, files)) {
+
+      grunt.log.warn('no change, not re-compiling sprite for', target);
+      return done();
+    }
+
     var destImage = path.join(options.destDir, this.target + '.png');
     var displayDir = options.displayDir;
     var filePath = displayDir ? path.join(displayDir, this.target + '.png') : destImage;
-
-    // get the timestamp of the last modified file
-    // var lastMtime = new Date(0);
-    // files.forEach(function (file) {
-    //   var mtime = fs.statSync(file).mtime;
-    //   if (mtime > lastMtime) {
-    //     lastMtime = mtime;
-    //   }
-    // });
-
-    // // if they are all older than the generated file, they don't need building
-    // if (fs.existsSync(destImage) && fs.statSync(destImage).ctime > lastMtime) {
-    //   grunt.log.debug('skipping sprite:', this.target);
-    //   return done();
-    // }
 
     var smithArgs = {
       'src': files,
