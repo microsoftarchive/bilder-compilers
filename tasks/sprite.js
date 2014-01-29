@@ -12,14 +12,13 @@ module.exports = function (grunt) {
   var _ = grunt.util._;
 
   function coordsToStylus (name, coords) {
-
-    var stylus = '$' + name + ' = ';
-    stylus += '-' + coords.x + 'px ' ;
-    stylus += '-' + coords.y + 'px ';
-    stylus += coords.width + 'px ';
-    stylus += coords.height + 'px';
-
-    return stylus;
+    return [
+      '$' + name + ' = ',
+      '-' + coords.x + 'px ',
+      '-' + coords.y + 'px ',
+      coords.width + 'px ',
+      coords.height + 'px'
+    ].join('');
   }
 
   function minifiyImage(file, options, callback) {
@@ -122,7 +121,8 @@ module.exports = function (grunt) {
       'srcDir': 'src/sprites',
       'stylusDir': 'src/styles/sprites'
     };
-    _.extend(options, this.data)
+
+    _.extend(options, this.data);
 
     var baseDir = options.srcDir + '/' + target;
     var files = grunt.file.expand({
@@ -138,7 +138,6 @@ module.exports = function (grunt) {
     var destStylus = path.join(options.stylusDir, this.target + '.styl');
 
     if (!files.length) {
-
       grunt.file.write(destStylus, '');
       grunt.log.warn('no files for', target);
       return done();
@@ -149,7 +148,6 @@ module.exports = function (grunt) {
     var filePath = displayDir ? path.join(displayDir, this.target + '.png') : destImage;
 
     if (!hasChanged(baseDir, files) && fs.existsSync(destImage)) {
-
       grunt.log.warn('no change, not re-compiling sprite for', target);
       return done();
     }
