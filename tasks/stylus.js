@@ -22,7 +22,7 @@ module.exports = function(grunt, options) {
     raw = options.wrapWithSelector + newLine;
 
     var lines = old.split('\n');
-    
+
     lines.forEach(function (line) {
       raw += '  ' + line + newLine;
     });
@@ -32,7 +32,7 @@ module.exports = function(grunt, options) {
     return raw;
   }
 
-  function compile (rawStylus, options, callback) {
+  function compile (rawStylus, options, callback, filename) {
 
     function done(err, css) {
 
@@ -50,7 +50,9 @@ module.exports = function(grunt, options) {
 
     try {
       stylus(rawStylus, {
-        'compress': true,
+        'filename': filename,
+        'compress': false,
+        'sourcemaps': true,
         'paths': [options.srcPath],
         'sassDebug': true
       })
@@ -58,7 +60,8 @@ module.exports = function(grunt, options) {
       .import('nib')
       .use(stylusHelpers)
       .render(done);
-    } catch (e){
+    } catch (e) {
+      console.log(e.stack);
       callback(e);
     }
   }
