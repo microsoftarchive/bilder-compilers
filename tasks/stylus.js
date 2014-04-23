@@ -1,4 +1,4 @@
-module.exports = function(grunt, options) {
+module.exports = function (grunt) {
 
   'use strict';
 
@@ -7,7 +7,7 @@ module.exports = function(grunt, options) {
   var stylusHelpers = require('../lib/stylus-helpers');
 
   var suffixRegExp = /\.styl$/;
-  var template = "define(function() { return {'name': '%s', 'styles': %s }; });";
+  var template = require('../lib/template');
 
   function name (file, options) {
     var prefixRegexp = new RegExp('^' + options.src + '/');
@@ -22,7 +22,7 @@ module.exports = function(grunt, options) {
     raw = options.wrapWithSelector + newLine;
 
     var lines = old.split('\n');
-    
+
     lines.forEach(function (line) {
       raw += '  ' + line + newLine;
     });
@@ -78,6 +78,7 @@ module.exports = function(grunt, options) {
     });
   }
 
-  grunt.registerTask('compile/stylus', 'Compile stylus sheets as AMD modules', StyleCompileTask);
+  grunt.registerTask('compile/stylus',
+    'Compile stylus sheets as AMD modules', StyleCompileTask);
   grunt.registerTask('compile/styles', ['compile/stylus']);
 };

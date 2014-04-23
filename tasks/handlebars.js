@@ -1,16 +1,11 @@
-module.exports = function(grunt, options) {
+module.exports = function(grunt) {
 
   'use strict';
 
   var handlebars = require('handlebars');
 
   var suffixRegExp = /\.tmpl$/;
-  var template = [
-    "define({",
-      "name: '%s',",
-      "template: %s",
-    "});"
-  ].join('');
+  var template = require('../lib/template');
 
   function name (file, options) {
     var prefixRegexp = new RegExp('^' + options.src + '/');
@@ -31,7 +26,7 @@ module.exports = function(grunt, options) {
   }
 
   var BaseCompileTask = require('../lib/base-compiler');
-  function HandlebarsCompileTask() {
+  function HandlebarsCompileTask () {
     BaseCompileTask.call(this, grunt, {
       'type': 'handlebars',
       'name': name,
@@ -45,5 +40,6 @@ module.exports = function(grunt, options) {
     });
   }
 
-  grunt.registerTask('compile/handlebars', 'Compile handlebars templates as AMD modules', HandlebarsCompileTask);
+  grunt.registerTask('compile/handlebars',
+    'Compile handlebars templates as AMD modules', HandlebarsCompileTask);
 };

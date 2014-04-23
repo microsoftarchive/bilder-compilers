@@ -1,4 +1,4 @@
-module.exports = function(grunt, options) {
+module.exports = function(grunt) {
 
   'use strict';
 
@@ -12,7 +12,7 @@ module.exports = function(grunt, options) {
 
   var suffixRegExp = /\/Localizable\.strings$/;
   var lineParsingRegExp = /^\s*\"([a-zA-Z0-9_\-\$]+)\"\s*=\s*\"(.*)\";\s*$/;
-  var template = "define(function() {\nreturn {\n'name': '%s',\n'data': %s\n};\n});";
+  var template = require('../lib/template');
 
   function resolveLangCode (langCode) {
 
@@ -63,7 +63,8 @@ module.exports = function(grunt, options) {
       if (sections && sections.length >= 2 && !sections[1].match(/\s/)) {
 
         var key = sections[1];
-        if (!(enabledLabels[key])) { // TODO: how to handle momentjs ?? && !key.match(/^momentjs_/)) {
+        if (!(enabledLabels[key])) {
+          // TODO: how to handle momentjs ?? && !key.match(/^momentjs_/)) {
           return;
         }
 
@@ -112,8 +113,8 @@ module.exports = function(grunt, options) {
       }
 
       available[langCode] = {
-        "file": metaData.file,
-        "name": metaData.name
+        'file': metaData.file,
+        'name': metaData.name
       };
 
       // push the list into an array that other tasks can user
@@ -187,5 +188,6 @@ module.exports = function(grunt, options) {
     }, compileAvailable);
   }
 
-  grunt.registerTask('compile/languages', 'Compile localization data as AMD modules', LanguageCompileTask);
+  grunt.registerTask('compile/languages',
+    'Compile localization data as AMD modules', LanguageCompileTask);
 };
