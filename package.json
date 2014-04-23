@@ -21,6 +21,7 @@
   "dependencies": {
     "stylus": "^0.43.1",
     "nib": "^1.0.2",
-    "handlebars": "^2.0.0-alpha.2"
+    "handlebars": "^2.0.0-alpha.2",
+    "async": "^0.7.0"
   }
 }
