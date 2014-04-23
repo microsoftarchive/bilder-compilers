@@ -67,7 +67,6 @@ module.exports = function(grunt) {
 
         var key = sections[1];
         if (!(enabledLabels[key])) {
-          // TODO: how to handle momentjs ?? && !key.match(/^momentjs_/)) {
           return;
         }
 
