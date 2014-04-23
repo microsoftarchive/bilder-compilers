@@ -1,45 +1,81 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   'use strict';
 
+  var util = require('util');
+  var path = require('path');
+  var async = require('async');
   var handlebars = require('handlebars');
 
-  var suffixRegExp = /\.tmpl$/;
   var template = require('../lib/template');
+  var defaults = {
+    'glob': [
+      '**/*.tmpl',
+      '**/*.hbs'
+    ]
+  };
 
-  function name (file, options) {
-    var prefixRegexp = new RegExp('^' + options.src + '/');
-    return file.replace(prefixRegexp, '').replace(suffixRegExp, '');
-  }
-
-  // compile the template
-  function compile (rawTemplate, options, callback) {
+  function compile (code, callback) {
+    // strip all new-line chars
+    code = code.replace(/[\r\n\s]+/g, ' ');
+    // render the compiled template
     try {
-      // new lines what?
-      rawTemplate = rawTemplate.replace(/[\r\n\s]+/g, ' ');
-      // render the compiled template
-      var funcString = handlebars.precompile(rawTemplate);
-      callback(null, funcString);
-    } catch(e) {
+      callback(null, handlebars.precompile(code));
+    } catch (e) {
       callback(e);
     }
   }
 
-  var BaseCompileTask = require('../lib/base-compiler');
-  function HandlebarsCompileTask () {
-    BaseCompileTask.call(this, grunt, {
-      'type': 'handlebars',
-      'name': name,
-      'template': template,
-      'compile': compile,
-      'options': {
-        'src': 'src/templates',
-        'dest': 'public/templates',
-        'glob': '**/*.tmpl'
+  var suffixRegExp = /\.(tmpl|hbs)$/;
+  function compileFile (options, file, callback) {
+    var name = file.replace(suffixRegExp, '');
+    var src = path.resolve(options.srcDir, file);
+    var dest = path.resolve(options.destDir, name + '.js');
+
+    // ensure the target destination exists
+    grunt.file.mkdir(path.dirname(dest));
+
+    // read the source
+    var rawCode = grunt.file.read(src);
+
+    // compile it
+    compile(rawCode, function (err, generated) {
+
+      // oopsie
+      if (err) {
+        grunt.log.error(err);
+        grunt.warn(file + ' compilation failed');
+        return callback(err);
       }
+
+      var module = util.format(template, name, generated);
+      grunt.file.write(dest, module);
+      grunt.log.debug('\u2713', src);
+      callback(null);
     });
   }
 
-  grunt.registerTask('compile/handlebars',
+  function HandlebarsCompileTask () {
+
+    var that = this;
+    var options = that.options(defaults);
+    var done = that.async();
+
+    var srcDir = options.srcDir;
+
+    // find all matching files
+    var files = grunt.file.expand({
+      'cwd': srcDir
+    }, options.glob);
+
+    var fn = compileFile.bind(null, {
+      'srcDir': srcDir,
+      'destDir': options.destDir || srcDir
+    });
+
+    async.eachLimit(files, 4, fn, done);
+  }
+
+  grunt.registerMultiTask('compile/handlebars',
     'Compile handlebars templates as AMD modules', HandlebarsCompileTask);
 };
