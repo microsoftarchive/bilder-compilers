@@ -6,11 +6,9 @@ module.exports = function(grunt, options) {
 
   var suffixRegExp = /\.tmpl$/;
   var template = [
-    "define(function () {",
-      "return {",
-        "name: '%s',",
-        "fn: %s",
-      "};",
+    "define({",
+      "name: '%s',",
+      "template: %s",
     "});"
   ].join('');
 
