@@ -1,3 +1,5 @@
+var marked = require('marked');
+
 module.exports = function(grunt, options) {
 
   'use strict';
@@ -80,7 +82,7 @@ module.exports = function(grunt, options) {
 
         value = value.replace(/\\\"/g, '"');
 
-        json[key] = value;
+        json[key] = marked(value) || value;
       }
     });
 
