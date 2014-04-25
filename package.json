@@ -1,6 +1,6 @@
 {
   "name": "bilder-compilers",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Compilers grunt-tasks for bilder",
   "main": "index.js",
   "scripts": {

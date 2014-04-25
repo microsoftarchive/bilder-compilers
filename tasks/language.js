@@ -1,4 +1,5 @@
-var marked = require('marked');
+var escape = require('../lib/escapeHTML');
+var markdown = require('../lib/markdown');
 
 module.exports = function(grunt, options) {
 
@@ -82,7 +83,7 @@ module.exports = function(grunt, options) {
 
         value = value.replace(/\\\"/g, '"');
 
-        json[key] = marked(value) || value;
+        json[key] = markdown(escape(value));
       }
     });
 
