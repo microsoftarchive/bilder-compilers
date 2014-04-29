@@ -1,58 +1,35 @@
-module.exports = function(grunt, options) {
+module.exports = function (grunt) {
 
   'use strict';
 
+  var util = require('util');
+  var path = require('path');
+  var async = require('async');
   var stylus = require('stylus');
   var nib = require('nib');
+
   var stylusHelpers = require('../lib/stylus-helpers');
 
-  var suffixRegExp = /\.styl$/;
-  var template = "define(function() { return {'name': '%s', 'styles': %s }; });";
+  var template = require('../lib/template');
+  var defaults = {
+    'glob': [
+      '**/*.styl'
+    ]
+  };
 
-  function name (file, options) {
-    var prefixRegexp = new RegExp('^' + options.src + '/');
-    return file.replace(prefixRegexp, '').replace(suffixRegExp, '');
-  }
+  function compile (code, options, callback) {
 
-  function wrapWithSelector (raw, options) {
-
-    var old = raw;
-    var newLine = '\n';
-
-    raw = options.wrapWithSelector + newLine;
-
-    var lines = old.split('\n');
-    
-    lines.forEach(function (line) {
-      raw += '  ' + line + newLine;
-    });
-
-    raw += newLine;
-
-    return raw;
-  }
-
-  function compile (rawStylus, options, callback) {
-
-    function done(err, css) {
-
-      // oopsie
+    function done (err, css) {
       if (err) {
         return callback(err);
       }
-
-      callback(null, JSON.stringify(css.replace(/[\r\n\s]+/g, ' ')));
-    }
-
-    if (!!rawStylus && options.wrapWithSelector) {
-      rawStylus = wrapWithSelector(rawStylus, options);
+      callback(null, JSON.stringify(css));
     }
 
     try {
-      stylus(rawStylus, {
+      stylus(code, {
         'compress': true,
-        'paths': [options.srcPath],
-        'sassDebug': true
+        'paths': options.includes
       })
       .use(nib())
       .import('nib')
@@ -63,21 +40,67 @@ module.exports = function(grunt, options) {
     }
   }
 
-  var BaseCompileTask = require('../lib/base-compiler');
-  function StyleCompileTask() {
-    BaseCompileTask.call(this, grunt, {
-      'type': 'stylus',
-      'name': name,
-      'template': template,
-      'compile': compile,
-      'options': {
-        'src': 'src/styles',
-        'dest': 'public/styles',
-        'glob': '**/*.styl'
+  var suffixRegExp = /\.(styl)$/;
+  function compileFile (options, file, callback) {
+    var name = file.replace(suffixRegExp, '');
+    var src = path.resolve(options.srcDir, file);
+    var dest = path.resolve(options.destDir, name + '.js');
+
+    // ensure the target destination exists
+    grunt.file.mkdir(path.dirname(dest));
+
+    // read the source
+    var rawCode = grunt.file.read(src);
+
+    // compile it
+    compile(rawCode, options, function (err, generated) {
+
+      // oopsie
+      if (err) {
+        grunt.log.error(err);
+        grunt.warn(file + ' compilation failed');
+        return callback && callback(err);
       }
+
+      var module = util.format(template, name, generated);
+      grunt.file.write(dest, module);
+      grunt.log.debug('\u2713', src, dest);
+      grunt.event.emit('stylus:compiled', file, name);
+      callback && callback(null);
     });
   }
 
-  grunt.registerTask('compile/stylus', 'Compile stylus sheets as AMD modules', StyleCompileTask);
-  grunt.registerTask('compile/styles', ['compile/stylus']);
+  function StylusCompileTask () {
+
+    var that = this;
+    var options = that.options(defaults);
+    var done = that.async();
+
+    var srcDir = options.srcDir;
+
+    // find all matching files
+    var files = grunt.file.expand({
+      'cwd': srcDir
+    }, options.glob);
+
+    var fn = compileFile.bind(null, {
+      'srcDir': srcDir,
+      'destDir': options.destDir || srcDir,
+      'includes': options.includes || []
+    });
+
+    grunt.event.on('watch', function (action, filepath) {
+      var hasValidExt = grunt.file.isMatch(options.glob, filepath);
+      var inCorrectPath = (filepath.indexOf(srcDir) === 0);
+      if (inCorrectPath && hasValidExt) {
+        var file = path.relative(srcDir, filepath);
+        fn(file);
+      }
+    });
+
+    async.eachLimit(files, 4, fn, done);
+  }
+
+  grunt.registerMultiTask('compile/stylus',
+    'Compile stylus sheets as AMD modules', StylusCompileTask);
 };
