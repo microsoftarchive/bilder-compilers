@@ -45,13 +45,14 @@ module.exports = function (grunt) {
       if (err) {
         grunt.log.error(err);
         grunt.warn(file + ' compilation failed');
-        return callback(err);
+        return callback && callback(err);
       }
 
       var module = util.format(template, name, generated);
       grunt.file.write(dest, module);
       grunt.log.debug('\u2713', src);
-      callback(null);
+      grunt.event.emit('handlebars:compiled', file, name);
+      callback && callback(null);
     });
   }
 
@@ -71,6 +72,15 @@ module.exports = function (grunt) {
     var fn = compileFile.bind(null, {
       'srcDir': srcDir,
       'destDir': options.destDir || srcDir
+    });
+
+    grunt.event.on('watch', function (action, filepath) {
+      var hasValidExt = grunt.file.isMatch(options.glob, filepath);
+      var inCorrectPath = (filepath.indexOf(srcDir) === 0);
+      if (inCorrectPath && hasValidExt) {
+        var file = path.relative(srcDir, filepath);
+        fn(file);
+      }
     });
 
     async.eachLimit(files, 4, fn, done);
