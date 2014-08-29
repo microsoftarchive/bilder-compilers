@@ -19,9 +19,9 @@
     "url": "https://github.com/wunderlist/bilder-compilers/issues"
   },
   "dependencies": {
-    "async": "^0.7.0",
-    "handlebars": "^2.0.0-alpha.2",
-    "nib": "^1.0.2",
-    "stylus": "^0.43.1"
+    "async": "0.7.0",
+    "handlebars": "2.0.0-alpha.2",
+    "nib": "1.0.2",
+    "stylus": "0.43.1"
   }
 }
