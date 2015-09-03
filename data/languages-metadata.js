@@ -46,6 +46,9 @@ module.exports = {
     "file": "czech",
     "name": "Čeština"
   },
+  "cy": {
+    "alias": "cy_GB"
+  },
   "cy_GB": {
     "file": "welsh",
     "name": "Cymraeg"
