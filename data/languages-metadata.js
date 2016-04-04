@@ -1,12 +1,22 @@
 module.exports = {
+  "af": {
+    "alias": "af_ZA"
+  },
   "af_ZA": {
     "file": "afrikaans",
     "name": "Afrikaans"
+  },
+  "am": {
+    "file": "amharic",
+    "name": "አማርኛ"
   },
   "ar": {
     "file": "arabic",
     "name": "‏العربية‏",
     "dir": "rtl"
+  },
+  "az": {
+    "alias": "az_AZ",
   },
   "az_AZ": {
     "file": "azerbaijani",
@@ -27,6 +37,9 @@ module.exports = {
     "file": "bulgarian",
     "name": "Български"
   },
+  "bn": {
+    "alias": "bn_IN"
+  },
   "bn_IN": {
     "file": "bengali",
     "name": "বাংলা"
@@ -41,6 +54,9 @@ module.exports = {
   "ca_ES": {
     "file": "catalan",
     "name": "Català"
+  },
+  "cs": {
+    "alias": "cs_CZ"
   },
   "cs_CZ": {
     "file": "czech",
@@ -112,9 +128,15 @@ module.exports = {
     "file": "spanish",
     "name": "Español"
   },
+  "et": {
+    "alias": "et_EE"
+  },
   "et_EE": {
     "file": "estonian",
     "name": "Eesti"
+  },
+  "eu": {
+    "alias": "eu_ES"
   },
   "eu_ES": {
     "file": "basque",
@@ -134,6 +156,10 @@ module.exports = {
   "fi_FI": {
     "file": "finnish",
     "name": "Suomi"
+  },
+  "fil": {
+    "file": "filipino",
+    "name": "Filipino"
   },
   "fo_FO": {
     "file": "faroese",
@@ -175,6 +201,10 @@ module.exports = {
     "file": "gujarati",
     "name": "ગુજરાતી"
   },
+  "ha_LATN_NG": {
+    "file": "hausa",
+    "name": "Harshen Hausa"
+  },
   "he": {
     "alias": "he_IL"
   },
@@ -208,6 +238,9 @@ module.exports = {
     "file": "armenian",
     "name": "Հայերեն"
   },
+  "id": {
+    "alias": "id_ID"
+  },
   "id_ID": {
     "file": "indonesian",
     "name": "Bahasa Indonesia"
@@ -240,9 +273,16 @@ module.exports = {
     "file": "georgian",
     "name": "ქართული"
   },
+  "kk": {
+    "file": "kazakh",
+    "name": "Қазақ тілі"
+  },
   "km_KH": {
     "file": "khmer",
     "name": "ភាសាខ្មែរ"
+  },
+  "kn": {
+    "alias": "kn_IN"
   },
   "kn_IN": {
     "file": "kannada",
@@ -264,21 +304,40 @@ module.exports = {
     "file": "latin",
     "name": "lingua latina"
   },
+  "lo": {
+    "file": "lao",
+    "name": "ພາສາລາວ"
+  },
+  "lt": {
+    "alias": "lt_LT"
+  },
   "lt_LT": {
     "file": "lithuanian",
     "name": "Lietuvių"
+  },
+  "lv": {
+    "alias": "lv_LV"
   },
   "lv_LV": {
     "file": "latvian",
     "name": "Latviešu"
   },
+  "mk": {
+    "alias": "mk_MK"
+  },
   "mk_MK": {
     "file": "macedonian",
     "name": "Македонски"
   },
+  "ml": {
+    "alias": "ml_IN"
+  },
   "ml_IN": {
     "file": "malayalam",
     "name": "മലയാളം"
+  },
+  "ms": {
+    "alias": "ms_MY"
   },
   "ms_MY": {
     "file": "malay",
@@ -387,11 +446,17 @@ module.exports = {
     "name": "Soomaaliga",
     "dir": "rtl"
   },
+  "sq": {
+    "alias": "sq_AL"
+  },
   "sq_AL": {
     "file": "albanian",
     "name": "Shqip"
   },
   "sr": {
+    "alias": "sr_RS"
+  },
+  "sr_LATN_RS": {
     "alias": "sr_RS"
   },
   "sr_RS": {
@@ -405,17 +470,29 @@ module.exports = {
     "file": "swedish",
     "name": "Svenska"
   },
+  "sw": {
+    "alias": "sw_KE"
+  },
   "sw_KE": {
     "file": "swahili",
     "name": "Kiswahili"
+  },
+  "ta": {
+    "alias": "ta_IN"
   },
   "ta_IN": {
     "file": "tamil",
     "name": "தமிழ்"
   },
+  "te": {
+    "alias": "te_IN"
+  },
   "te_IN": {
     "file": "telugu",
     "name": "తెలుగు"
+  },
+  "th": {
+    "alias": "th_TH"
   },
   "th_TH": {
     "file": "thai",
@@ -432,6 +509,9 @@ module.exports = {
     "file": "turkish",
     "name": "Türkçe"
   },
+  "uk": {
+    "alias": "uk_UA"
+  },
   "uk_UA": {
     "file": "ukrainian",
     "name": "Українська"
@@ -440,6 +520,13 @@ module.exports = {
     "file": "urdu",
     "name": "اردو",
     "dir": "rtl"
+  },
+  "uz_LATN_UZ": {
+    "file": "uzbek",
+    "name": "Oʻzbekcha"
+  },
+  "vi": {
+    "alias": "vi_VN"
   },
   "vi_VN": {
     "file": "vietnamese",
@@ -450,6 +537,9 @@ module.exports = {
     "name": "ייִדיש",
     "dir": "rtl"
   },
+  "zh_HANS": {
+    "alias": "zh_CN"
+  },
   "zh_CN": {
     "file": "simplified-chinese-china",
     "name": "中文(简体)"
@@ -457,6 +547,9 @@ module.exports = {
   "zh_HK": {
     "file": "chinese-hongkong)",
     "name": "中文(香港)"
+  },
+  "zh_HANT": {
+    "alias": "zh_TW"
   },
   "zh_TW": {
     "file": "chinese-taiwan",
