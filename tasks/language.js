@@ -8,7 +8,9 @@ module.exports = function(grunt) {
   var path = require('path');
   var util = require('util');
 
-  var langMetaData = require('../data/languages-metadata');
+  var langMetaDataRaw = require('../data/languages-metadata');
+
+  var langMetaData = {};
   var enabledLanguages = {};
   var enabledLabels = {};
 
@@ -16,10 +18,21 @@ module.exports = function(grunt) {
   var lineParsingRegExp = /^\s*\"([a-zA-Z0-9_\-\$]+)\"\s*=\s*\"(.*)\";\s*$/;
   var template = require('../lib/template');
 
+  // normalize lang codes
+  var normalizedCode, alias;
+  for (var code in langMetaDataRaw) {
+    normalizedCode = code.toLowerCase();
+    langMetaData[normalizedCode] = langMetaDataRaw[code];
+    alias = langMetaData[normalizedCode].alias;
+    if (alias) {
+      langMetaData[normalizedCode].alias = alias.toLowerCase();
+    }
+  }
+
   function resolveLangCode (langCode) {
 
-    // GetLocalization doesn't follow ISO codes, fix the names
-    langCode = langCode.replace(/\-/g, '_');
+    // Don't break on case insensitve glob results, fix the names
+    langCode = langCode.replace(/\-/g, '_').toLowerCase();
 
     var metaData = langMetaData[langCode];
     while (metaData && metaData.alias) {
